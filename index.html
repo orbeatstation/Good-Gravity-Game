@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Gravity Game — Évaluation de Conformité</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0f;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  #gg-root {
+    color: #f5a623;
+    width: 100%;
+    max-width: 620px;
+    background: #0a0a0f;
+    padding: 2rem;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #2a1a00;
+  }
+  #gg-root::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(245,166,35,0.015) 2px,
+      rgba(245,166,35,0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+  .gg-content { position: relative; z-index: 1; }
+  .gg-scan-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: rgba(245,166,35,0.08);
+    animation: scan 4s linear infinite;
+    z-index: 2;
+  }
+  @keyframes scan { from { top: 0; } to { top: 100%; } }
+  .gg-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #2a1a00;
+    padding-bottom: 1.5rem;
+  }
+  .gg-station-id {
+    font-size: 11px;
+    color: #7a4a00;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+  }
+  .gg-title {
+    font-size: 20px;
+    color: #f5a623;
+    letter-spacing: 2px;
+    margin-bottom: 0.25rem;
+  }
+  .gg-subtitle {
+    font-size: 11px;
+    color: #7a4a00;
+    letter-spacing: 1px;
+  }
+  .gg-blink { animation: blink 1.2s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .gg-progress-bar {
+    height: 3px;
+    background: #1a0f00;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .gg-progress-fill {
+    height: 100%;
+    background: #f5a623;
+    transition: width 0.4s ease;
+  }
+  .gg-question-num {
+    font-size: 10px;
+    color: #7a4a00;
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+  }
+  .gg-question-text {
+    font-size: 15px;
+    color: #f5a623;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    min-height: 60px;
+  }
+  .gg-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gg-choice {
+    background: #0f0900;
+    border: 1px solid #2a1a00;
+    color: #b07020;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 12px 16px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .gg-choice:hover {
+    background: #1a0f00;
+    border-color: #f5a623;
+    color: #f5a623;
+  }
+  .gg-choice::before { content: '> '; color: #f5a623; opacity: 0; transition: opacity 0.15s; }
+  .gg-choice:hover::before { opacity: 1; }
+  .gg-verdict { text-align: center; }
+  .gg-verdict-label {
+    font-size: 10px;
+    color: #7a4a00;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+  }
+  .gg-verdict-title {
+    font-size: 22px;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+    color: #f5a623;
+  }
+  .gg-verdict-score {
+    font-size: 11px;
+    color: #7a4a00;
+    margin-bottom: 1.5rem;
+  }
+  .gg-verdict-desc {
+    font-size: 13px;
+    color: #b07020;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    border-left: 2px solid #2a1a00;
+    padding-left: 1rem;
+    text-align: left;
+  }
+  .gg-cta {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: #0f0900;
+    border: 1px solid #f5a623;
+    border-radius: 2px;
+    text-align: left;
+  }
+  .gg-cta-text {
+    font-size: 12px;
+    color: #7a4a00;
+    margin-bottom: 0.75rem;
+    letter-spacing: 1px;
+  }
+  .gg-cta-main {
+    font-size: 14px;
+    color: #f5a623;
+    letter-spacing: 0.5px;
+    line-height: 1.8;
+  }
+  .gg-cta-main a {
+    color: #ffcc66;
+    text-decoration: underline;
+  }
+  .gg-restart {
+    background: transparent;
+    border: 1px solid #2a1a00;
+    color: #7a4a00;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    margin-top: 1.5rem;
+    transition: all 0.15s;
+  }
+  .gg-restart:hover { border-color: #7a4a00; color: #b07020; }
+
+  /* Easter egg hidden log */
+  #gg-log {
+    margin-top: 1.5rem;
+    font-size: 10px;
+    color: #3a2000;
+    letter-spacing: 1px;
+    line-height: 1.8;
+    border-top: 1px solid #1a0f00;
+    padding-top: 1rem;
+    display: none;
+  }
+
+  /* Konami easter egg flash */
+  .flash-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(245,166,35,0.15);
+    z-index: 999;
+    pointer-events: none;
+    animation: flashout 0.6s ease forwards;
+  }
+  @keyframes flashout { to { opacity: 0; } }
+</style>
+</head>
+<body>
+<div id="gg-root">
+  <div class="gg-scan-line"></div>
+  <div class="gg-content">
+    <div class="gg-header">
+      <div class="gg-station-id">STATION EDEN · PROTOCOLE ÉMIS PAR ORBEATS STATION · SECTEUR 7</div>
+      <div class="gg-title">ÉVALUATION DE CONFORMITÉ</div>
+      <div class="gg-subtitle">PROTOCOLE D-44 · CODE 049 · CITOYENS SUSPECTS <span class="gg-blink">█</span></div>
+    </div>
+    <div class="gg-progress-bar">
+      <div class="gg-progress-fill" id="progress" style="width: 0%"></div>
+    </div>
+    <div id="game-area"></div>
+    <div id="gg-log">
+      <div>// STATION EDEN — JOURNAL INTERNE</div>
+      <div>// SUJET 307B — DOSSIER ACTIF</div>
+      <div>// STATION 808 SIGNAL DÉTECTÉ</div>
+      <div>// CODE 049 — NIVEAU D'ALERTE : MAXIMUM</div>
+      <div>// SOURCE : ORBEATS STATION [AUTEUR NON AUTORISÉ]</div>
+      <div>// [DONNÉES CORROMPUES]</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "SUJET, identifiez-vous. Quel est votre rapport à l'autorité ?",
+    choices: [
+      { text: "Je respecte les règles. Elles sont là pour nous protéger.", score: 0 },
+      { text: "Je les respecte... quand elles ont du sens.", score: 1 },
+      { text: "Les règles sont faites pour être comprises, pas obéies.", score: 2 },
+      { text: "Quelle autorité ? Je n'en reconnais aucune.", score: 3 }
+    ]
+  },
+  {
+    text: "La station détecte une anomalie dans votre quartier. Signal provenant de la STATION 808. Que faites-vous ?",
+    choices: [
+      { text: "Je signale immédiatement aux autorités de la STATION EDEN.", score: 0 },
+      { text: "J'observe discrètement avant d'agir.", score: 1 },
+      { text: "Je protège mes voisins d'abord.", score: 2 },
+      { text: "J'exploite la situation à mon avantage.", score: 3 }
+    ]
+  },
+  {
+    text: "Le Dr. Voss vous propose une modification cybernétique gratuite. Elle améliore vos capacités mais installe un traceur lié au CODE 049. Vous...",
+    choices: [
+      { text: "J'accepte. La performance avant tout.", score: 0 },
+      { text: "Je refuse poliment.", score: 1 },
+      { text: "Je fais semblant d'accepter et je sabote le traceur.", score: 2 },
+      { text: "Je retourne le traceur contre la station.", score: 3 }
+    ]
+  },
+  {
+    text: "Vous trouvez un message crypté glissé sous votre porte. Il dit : 'La gravité n'est pas ce qu'elle semble être — SUJET 307B sait la vérité.' Votre réaction ?",
+    choices: [
+      { text: "Je le remets aux autorités sans le lire.", score: 0 },
+      { text: "Je le lis mais n'en parle à personne.", score: 1 },
+      { text: "Je cherche l'expéditeur.", score: 2 },
+      { text: "Je réponds au message.", score: 3 }
+    ]
+  },
+  {
+    text: "Dernière question, SUJET. Si vous pouviez changer une chose dans la station...",
+    choices: [
+      { text: "Rien. Le système fonctionne.", score: 0 },
+      { text: "Plus de transparence sur les décisions.", score: 1 },
+      { text: "Libérer les zones de quarantaine.", score: 2 },
+      { text: "Tout faire exploser et recommencer.", score: 3 }
+    ]
+  }
+];
+
+const verdicts = [
+  {
+    range: [0, 3],
+    title: "CITOYEN MODÈLE",
+    color: "#7a4a00",
+    code: "CONFORMITÉ : 98.7%",
+    desc: "Vous êtes un pilier de la station. Docile, prévisible, utile. La STATION EDEN vous remercie de votre coopération exemplaire. Vous ne serez pas surveillé... cette semaine.",
+  },
+  {
+    range: [4, 7],
+    title: "SUJET AMBIGU",
+    color: "#b07020",
+    code: "CONFORMITÉ : 61.2%",
+    desc: "Vous oscillez entre obéissance et questionnement. La STATION EDEN vous a à l'œil. Un faux pas et vous basculez dans la catégorie 'Indésirable'. Choisissez vos prochaines actions avec soin.",
+  },
+  {
+    range: [8, 11],
+    title: "ÉLÉMENT DÉVIANT",
+    color: "#f5a623",
+    code: "CONFORMITÉ : 23.8% — CODE 049 ACTIVÉ",
+    desc: "Votre profil correspond aux critères de déviance avancée. Le Dr. Voss a été notifié. Le dossier SUJET 307B a été mis à jour. Une convocation est en cours de génération. Nous vous conseillons de ne pas fuir — la station voit tout.",
+  },
+  {
+    range: [12, 15],
+    title: "SUJET CRITIQUE",
+    color: "#ff6600",
+    code: "CONFORMITÉ : 0.0% — MENACE MAXIMALE · SUJET 307B",
+    desc: "Vous êtes exactement ce que la STATION EDEN craint. Incontrôlable. Imprévisible. Dangereux. Les cyborgs sont en route depuis la STATION 808. Le CODE 049 est déclenché. Mais peut-être... êtes-vous exactement ce dont la résistance a besoin.",
+  }
+];
+
+let current = 0;
+let score = 0;
+let clickCount = 0;
+let titleClicks = 0;
+
+function getVerdict(s) {
+  return verdicts.find(v => s >= v.range[0] && s <= v.range[1]);
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  const pct = (current / questions.length) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('game-area').innerHTML = `
+    <div class="gg-question-num">QUESTION ${current + 1} / ${questions.length}</div>
+    <div class="gg-question-text">${q.text}</div>
+    <div class="gg-choices">
+      ${q.choices.map((c) => `
+        <button class="gg-choice" onclick="answer(${c.score})">${c.text}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function answer(s) {
+  score += s;
+  current++;
+  if (current >= questions.length) {
+    renderVerdict();
+  } else {
+    renderQuestion();
+  }
+}
+
+function renderVerdict() {
+  document.getElementById('progress').style.width = '100%';
+  const v = getVerdict(score);
+  document.getElementById('game-area').innerHTML = `
+    <div class="gg-verdict">
+      <div class="gg-verdict-label">ÉVALUATION TERMINÉE — RÉSULTAT</div>
+      <div class="gg-verdict-title" style="color: ${v.color}">${v.title}</div>
+      <div class="gg-verdict-score">${v.code}</div>
+      <div class="gg-verdict-desc">${v.desc}</div>
+      <div class="gg-cta">
+        <div class="gg-cta-text">TRANSMISSION INTERCEPTÉE — POUR LES DÉVIANTS :</div>
+        <div class="gg-cta-main">
+          → Écoute l'album <strong>Good Gravity Game</strong> by Orbeats Station :<br>
+          <a href="https://ditto.fm/good-gravity-game" target="_blank">ditto.fm/good-gravity-game</a><br><br>
+          → Partage ton verdict en story et tague-nous
+        </div>
+      </div>
+      <br>
+      <button class="gg-restart" onclick="restart()">[ RECOMMENCER L'ÉVALUATION ]</button>
+    </div>
+  `;
+  document.getElementById('gg-log').style.display = 'block';
+}
+
+function restart() {
+  current = 0;
+  score = 0;
+  document.getElementById('progress').style.width = '0%';
+  document.getElementById('gg-log').style.display = 'none';
+  renderQuestion();
+}
+
+// Easter egg : cliquer 7 fois sur le titre déclenche un message secret
+document.querySelector('.gg-title').style.cursor = 'pointer';
+document.querySelector('.gg-title').addEventListener('click', () => {
+  titleClicks++;
+  if (titleClicks === 7) {
+    titleClicks = 0;
+    const flash = document.createElement('div');
+    flash.className = 'flash-overlay';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 700);
+    const secret = document.createElement('div');
+    secret.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#0a0a0f;border:1px solid #f5a623;padding:2rem;font-family:Share Tech Mono,monospace;color:#f5a623;z-index:1000;text-align:center;font-size:13px;letter-spacing:2px;max-width:340px;';
+    secret.innerHTML = `
+      <div style="font-size:10px;color:#7a4a00;margin-bottom:1rem;letter-spacing:3px;">TRANSMISSION SECRÈTE INTERCEPTÉE</div>
+      <div style="margin-bottom:1rem;">STATION EDEN · NIVEAU -9</div>
+      <div style="font-size:11px;color:#b07020;line-height:1.7;">SUJET 307B est en vie.<br>Le CODE 049 n'est pas ce qu'il semble.<br>La STATION 808 émet encore.<br>Cherche ce qui tombe vers le haut.<br><br>— Orbeats Station</div>
+      <br>
+      <button onclick="this.parentElement.remove()" style="background:transparent;border:1px solid #2a1a00;color:#7a4a00;font-family:Share Tech Mono,monospace;font-size:11px;padding:6px 14px;cursor:pointer;letter-spacing:2px;">[ FERMER ]</button>
+    `;
+    document.body.appendChild(secret);
+  }
+});
+
+renderQuestion();
+</script>
+</body>
+</html>
