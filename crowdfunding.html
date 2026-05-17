@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Gravity Game — Soutiens le projet</title>
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1311718774116068');
+fbq('track', 'PageView');
+fbq('track', 'InitiateCheckout');
+</script>
+<noscript>
+  <img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1311718774116068&ev=PageView&noscript=1"/>
+</noscript>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0f;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  .container {
+    text-align: center;
+    color: #f5a623;
+    padding: 2rem;
+  }
+  .title {
+    font-size: 18px;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: #7a4a00;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+  }
+  .loader {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #2a1a00;
+    border-top: 2px solid #f5a623;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .redirect-text {
+    font-size: 11px;
+    color: #7a4a00;
+    letter-spacing: 1px;
+  }
+  a { color: #f5a623; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="loader"></div>
+  <div class="title">GOOD GRAVITY GAME</div>
+  <div class="subtitle">STATION EDEN · PROTOCOLE FINANCEMENT</div>
+  <div class="redirect-text">Redirection en cours vers la cagnotte...<br><br>
+  Si rien ne se passe, <a href="https://www.helloasso.com/associations/or-beats-station/collectes/obs-mixtape-vol-1">clique ici</a>
+  </div>
+</div>
+
+<script>
+  // Redirection automatique après 1.5 secondes
+  // Laisse le temps au pixel de se déclencher
+  setTimeout(function() {
+    window.location.href = "https://www.helloasso.com/associations/or-beats-station/collectes/obs-mixtape-vol-1";
+  }, 1500);
+</script>
+</body>
+</html>
